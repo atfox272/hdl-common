@@ -9,6 +9,8 @@ module sync_fifo
     parameter OUT_DATA_WIDTH    = DATA_WIDTH,
     // -- For CONCAT FIFO 
     parameter CONCAT_ORDER      = "LSB",
+    // -- For DECONCAT FIFO 
+    parameter DECONCAT_ORDER    = "LSB",    // "MSB": First data-out is placed at MSB || "LSB": First data-out is placed at LSB 
     // Do not configure
     parameter ADDR_WIDTH        = $clog2(FIFO_DEPTH)
 )
@@ -53,6 +55,7 @@ if(FIFO_TYPE == 1) begin : NORMAL_FIFO
     assign rd_ready_o   = (~empty_o);
     assign rd_handshake = rd_valid_i & rd_ready_o;
     assign wr_handshake = wr_valid_i & wr_ready_o;
+    assign counter      = wr_ptr - rd_ptr;
     
     // Flip-flop/RAM
     always @(posedge clk) begin
@@ -113,6 +116,7 @@ else if(FIFO_TYPE == 2) begin : FWD_FLOP
     assign po_bwd_valid = |(rd_ptr^wr_ptr);
     assign rd_handshake = po_bwd_valid & po_bwd_ready;
     assign wr_handshake = wr_valid_i & wr_ready_o;
+    assign counter      = wr_ptr - rd_ptr;
     
     // Flip-flop/RAM
     always @(posedge clk) begin
@@ -279,7 +283,7 @@ else if(FIFO_TYPE == 3) begin : CONCAT_FIFO
     assign wr_hsk       = wr_valid_i & wr_ready_o;
     assign rd_hsk       = rd_valid_i & rd_ready_o;
     assign sml_full     = ~|(sml_cnt ^ (CAT_NUM-1));
-    for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin
+    for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : OUT_FLAT
         if(CONCAT_ORDER == "LSB") begin
             assign data_o[IN_DATA_WIDTH*(sml_idx+1)-1-:IN_DATA_WIDTH] = buffer[sml_idx];
         end
@@ -346,8 +350,13 @@ else if(FIFO_TYPE == 4) begin : DECONCAT_FIFO
     assign buf_ocp      = wr_ptr ^ rd_ptr;
     assign wr_hsk       = wr_valid_i & wr_ready_o;
     assign rd_hsk       = rd_valid_i & rd_ready_o;
-    for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin
-        assign data_map[sml_idx] = buffer[OUT_DATA_WIDTH*(sml_idx+1)-1-:OUT_DATA_WIDTH];
+    for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : BUF_MAP
+        if(DECONCAT_ORDER == "LSB") begin
+            assign data_map[sml_idx] = buffer[OUT_DATA_WIDTH*(sml_idx+1)-1-:OUT_DATA_WIDTH];
+        end
+        else if (DECONCAT_ORDER == "MSB") begin
+            assign data_map[CAT_NUM-1 - sml_idx] = buffer[OUT_DATA_WIDTH*(sml_idx+1)-1-:OUT_DATA_WIDTH];
+        end
     end
     // Flip-flop
     always @(posedge clk) begin
