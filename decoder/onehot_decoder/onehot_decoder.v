@@ -13,7 +13,7 @@ module onehot_decoder
     
     // Combinational logic
     generate
-        for(bit_ctn = 0; bit_ctn < OUTPUT_W; bit_ctn = bit_ctn + 1) begin
+        for(bit_ctn = 0; bit_ctn < OUTPUT_W; bit_ctn = bit_ctn + 1) begin : O_MAP
             assign o[bit_ctn] = (i == bit_ctn);
         end
     endgenerate

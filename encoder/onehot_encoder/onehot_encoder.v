@@ -26,8 +26,8 @@ module onehot_encoder
     end
     endgenerate
     generate
-        for(o_bit_idx = 0; o_bit_idx < OUTPUT_W; o_bit_idx = o_bit_idx + 1) begin
-            for(i_bit_idx = 0; i_bit_idx < 2**OUTPUT_W; i_bit_idx = i_bit_idx + 1) begin
+        for(o_bit_idx = 0; o_bit_idx < OUTPUT_W; o_bit_idx = o_bit_idx + 1) begin : O_MAP
+            for(i_bit_idx = 0; i_bit_idx < 2**OUTPUT_W; i_bit_idx = i_bit_idx + 1) begin : I_MAP
                 if((i_bit_idx/(2**o_bit_idx))%2 == 1) begin
                     assign o_bit_set[o_bit_idx][(2**o_bit_idx)*(i_bit_idx/(2*(2**o_bit_idx)))+(i_bit_idx%(2**o_bit_idx))] = i_ext[i_bit_idx];
                 end
