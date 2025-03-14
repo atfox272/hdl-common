@@ -23,7 +23,7 @@ module reorder_buffer #(
     input                   ord_vld,
     output                  ord_rdy,
     // ID list
-    input   [ID_W-1:0]      buf_id  [0:ORD_DEPTH-1]
+    input   [ORD_DEPTH*ID_W-1:0]    buf_id
 );
     // Local parameters 
     localparam ORD_INFO_W   = ID_W + LEN_W;
@@ -36,6 +36,7 @@ module reorder_buffer #(
     wire    [ORD_DEPTH-1:0] db_id_map;
     wire                    db_bwd_vld  [0:ORD_DEPTH-1];
     wire                    db_bwd_rdy  [0:ORD_DEPTH-1];
+    wire    [ID_W-1:0]      buf_id_pck  [0:ORD_DEPTH-1];
     
     wire    [DATA_W-1:0]    db_fwd_dat  [0:ORD_DEPTH-1];
     wire                    db_fwd_vld  [0:ORD_DEPTH-1];
@@ -148,8 +149,9 @@ if(FIX_ID == 0) begin : DYNAMICS_ID
     );
     // Combinational logic
     for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx++) begin : ID_MAP
-        assign db_id_map[buf_idx]       = (~|(buf_id[buf_idx]^bwd_id));
-        assign fwd_ord_id_map[buf_idx]  = (~|(buf_id[buf_idx]^fwd_ord_id));
+        assign buf_id_pck[buf_idx]      = buf_id[(buf_idx+1)*ID_W-1-:ID_W];
+        assign db_id_map[buf_idx]       = (~|(buf_id_pck[buf_idx]^bwd_id));
+        assign fwd_ord_id_map[buf_idx]  = (~|(buf_id_pck[buf_idx]^fwd_ord_id));
     end
 end
 else begin : FIXED_ID
