@@ -75,7 +75,7 @@ module reorder_buffer #(
         .rst_n          (rst_n)
     );
 generate
-for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx++) begin : DATA_BUF
+for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx = buf_idx + 1) begin : DATA_BUF
     // -- Data buffer
     sync_fifo #(
         .FIFO_TYPE      (1),    // Normal type
@@ -108,7 +108,7 @@ endgenerate
     assign bwd_id_ext   = |db_id_map;
     assign fwd_ord_id_ext = |fwd_ord_id_map;
 generate
-for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx++) begin : CTRL_MAP
+for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx = buf_idx + 1) begin : CTRL_MAP
     assign db_bwd_vld[buf_idx]  = db_id_map[buf_idx] & bwd_vld & bwd_id_ext;
     assign db_fwd_rdy[buf_idx]  = fwd_ord_id_map[buf_idx] & fwd_rdy; 
 end
@@ -148,7 +148,7 @@ if(FIX_ID == 0) begin : DYNAMICS_ID
         .o              (fwd_ord_id_enc)
     );
     // Combinational logic
-    for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx++) begin : ID_MAP
+    for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx = buf_idx + 1) begin : ID_MAP
         assign buf_id_pck[buf_idx]      = buf_id[(buf_idx+1)*ID_W-1-:ID_W];
         assign db_id_map[buf_idx]       = (~|(buf_id_pck[buf_idx]^bwd_id));
         assign fwd_ord_id_map[buf_idx]  = (~|(buf_id_pck[buf_idx]^fwd_ord_id));
@@ -158,7 +158,7 @@ else begin : FIXED_ID
     // Combinational logic
     assign bwd_id_enc       = bwd_id;
     assign fwd_ord_id_enc   = fwd_ord_id;
-    for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx++) begin : ID_MAP
+    for (buf_idx = 0; buf_idx < ORD_DEPTH; buf_idx = buf_idx + 1) begin : ID_MAP
         assign db_id_map[buf_idx]       = buf_idx == bwd_id;
         assign fwd_ord_id_map[buf_idx]  = buf_idx == fwd_ord_id;
     end
