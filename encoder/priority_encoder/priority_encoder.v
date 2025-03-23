@@ -16,7 +16,7 @@ module priority_encoder
     
     // Combinational logic
     generate
-        for(idx = 0; idx < INPUT_W; idx = idx + 1) begin
+        for(idx = 0; idx < INPUT_W; idx = idx + 1) begin : MUX_SEQ_GEN
             if(idx == 0) begin
                 assign mux_seq[idx] = (i[idx] == 1'b1) ? idx : {OUTPUT_W{1'b0}};
             end
