@@ -21,6 +21,8 @@ module memory
     output  [DATA_W-1:0]    rd_data_o,
     output                  rd_rdy_o
 );
+    // Local parameters
+    localparam ALIGN_ADDR_W = $clog2(MEM_SIZE);
     // Internal signal
     // -- wire
     // -- reg
@@ -36,12 +38,12 @@ module memory
     // RAM Inference
     always @(posedge clk) begin
         if(wr_vld_i & wr_rdy_o) begin
-            mem[wr_addr_i] <= wr_data_i;
+            mem[wr_addr_i[ALIGN_ADDR_W-1:0]] <= wr_data_i;
         end
     end
     always @(posedge clk) begin
         if(rd_vld_i) begin
-            rd_data_q1 <= mem[rd_addr_i];
+            rd_data_q1 <= mem[rd_addr_i[ALIGN_ADDR_W-1:0]];
         end
     end
     always @(posedge clk or negedge rst_n) begin
