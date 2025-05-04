@@ -360,7 +360,10 @@ if(AXI4_CTRL_STAT == 1) begin: AXI4_STAT
     end
 end
 else begin
-    assign stat_ar_map_vld = {STAT_REG_NUM{1'b0}};
+    for(stat_idx = 0; stat_idx < STAT_REG_NUM; stat_idx = stat_idx + 1) begin : STATUS_MAP
+        assign stat_map[stat_idx] = {DATA_W{1'b0}};
+        assign stat_ar_map_vld[stat_idx] = 1'b0;    // Check if the address is in the status region
+    end
 end
 
 if(AXI4_CTRL_WR_ST == 1) begin : AXI4_WR_ST
@@ -569,6 +572,12 @@ if(AXI4_CTRL_MEM == 1) begin    : AXI4_MEM
     end
 end
 else begin
+    // Set IOs
+    assign mem_wr_data_o    = {MEM_DATA_W{1'b0}};
+    assign mem_wr_addr_o    = {MEM_ADDR_W{1'b0}};
+    assign mem_wr_vld_o     = 1'b0;
+    assign mem_rd_addr_o    = {MEM_ADDR_W{1'b0}};
+    assign mem_rd_vld_o     = 1'b0;
     // Set flags
     assign mem_aw_map_vld   = 1'b0;
     assign mem_ar_map_vld   = 1'b0;
