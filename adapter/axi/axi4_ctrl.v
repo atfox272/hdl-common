@@ -583,6 +583,7 @@ else begin
     assign mem_ar_map_vld   = 1'b0;
     assign mem_wr_rdy       = 1'b1;
     assign mem_rd_rdy       = 1'b1;
+    assign mem_rd_data      = {MEM_DATA_W{1'b0}};
 end
 endgenerate
     // COMMON LOGIC
