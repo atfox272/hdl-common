@@ -56,7 +56,8 @@ if(FIFO_TYPE == 1) begin : NORMAL_FIFO
     assign rd_handshake = rd_valid_i & rd_ready_o;
     assign wr_handshake = wr_valid_i & wr_ready_o;
     assign counter      = wr_ptr - rd_ptr;
-    
+    assign almost_empty_o = ~|(wr_ptr ^ (rd_ptr + 1'b1));
+    assign almost_full_o  = ~|((wr_ptr + 1'b1) ^ rd_ptr);
     // Flip-flop/RAM
     always @(posedge clk) begin
         if(wr_handshake) begin
@@ -117,7 +118,9 @@ else if(FIFO_TYPE == 2) begin : FWD_FLOP
     assign rd_handshake = po_bwd_valid & po_bwd_ready;
     assign wr_handshake = wr_valid_i & wr_ready_o;
     assign counter      = wr_ptr - rd_ptr;
-    
+    assign almost_empty_o = 1'b0; // Not-use in this type
+    assign almost_full_o  = 1'b0; // Not-use in this type
+
     // Flip-flop/RAM
     always @(posedge clk) begin
         if(wr_handshake) begin
@@ -283,6 +286,8 @@ else if(FIFO_TYPE == 3) begin : CONCAT_FIFO
     assign wr_hsk       = wr_valid_i & wr_ready_o;
     assign rd_hsk       = rd_valid_i & rd_ready_o;
     assign sml_full     = ~|(sml_cnt ^ (CAT_NUM-1));
+    assign almost_empty_o = 1'b0; // Not-use in this type
+    assign almost_full_o  = 1'b0; // Not-use in this type
     for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : OUT_FLAT
         if(CONCAT_ORDER == "LSB") begin
             assign data_o[IN_DATA_WIDTH*(sml_idx+1)-1-:IN_DATA_WIDTH] = buffer[sml_idx];
@@ -350,6 +355,8 @@ else if(FIFO_TYPE == 4) begin : DECONCAT_FIFO
     assign buf_ocp      = wr_ptr ^ rd_ptr;
     assign wr_hsk       = wr_valid_i & wr_ready_o;
     assign rd_hsk       = rd_valid_i & rd_ready_o;
+    assign almost_empty_o = 1'b0; // Not-use in this type
+    assign almost_full_o  = 1'b0; // Not-use in this type
     for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : BUF_MAP
         if(DECONCAT_ORDER == "LSB") begin
             assign data_map[sml_idx] = buffer[OUT_DATA_WIDTH*(sml_idx+1)-1-:OUT_DATA_WIDTH];
