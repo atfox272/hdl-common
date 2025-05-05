@@ -288,6 +288,7 @@ else if(FIFO_TYPE == 3) begin : CONCAT_FIFO
     assign sml_full     = ~|(sml_cnt ^ (CAT_NUM-1));
     assign almost_empty_o = 1'b0; // Not-use in this type
     assign almost_full_o  = 1'b0; // Not-use in this type
+    assign counter      = {ADDR_WIDTH{1'b0}}; // Not-use in this type
     for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : OUT_FLAT
         if(CONCAT_ORDER == "LSB") begin
             assign data_o[IN_DATA_WIDTH*(sml_idx+1)-1-:IN_DATA_WIDTH] = buffer[sml_idx];
@@ -357,6 +358,7 @@ else if(FIFO_TYPE == 4) begin : DECONCAT_FIFO
     assign rd_hsk       = rd_valid_i & rd_ready_o;
     assign almost_empty_o = 1'b0; // Not-use in this type
     assign almost_full_o  = 1'b0; // Not-use in this type
+    assign counter      = {ADDR_WIDTH{1'b0}}; // Not-use in this type
     for(sml_idx = 0; sml_idx < CAT_NUM; sml_idx = sml_idx + 1) begin : BUF_MAP
         if(DECONCAT_ORDER == "LSB") begin
             assign data_map[sml_idx] = buffer[OUT_DATA_WIDTH*(sml_idx+1)-1-:OUT_DATA_WIDTH];
