@@ -485,6 +485,9 @@ if(AXI4_CTRL_RD_ST == 1) begin : AXI4_RD_ST
 end
 else begin
     // DO SOMETHING: set all flags to ...
+    for (fifo_idx = 0; fifo_idx < ST_RD_FIFO_NUM; fifo_idx = fifo_idx + 1) begin : RX_LOGIC_GEN
+        assign rd_st_rd_data[fifo_idx] = {DATA_W{1'b0}};
+    end
     assign rd_st_ar_map_vld = {ST_RD_FIFO_NUM{1'b0}};
     assign rd_st_rd_rdy     = 1'b1;
 end
