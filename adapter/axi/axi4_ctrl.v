@@ -438,6 +438,7 @@ else begin
     assign wr_st_wr_rdy     = 1'b1;
     assign wr_st_aw_map_vld = {ST_WR_FIFO_NUM{1'b0}};
     assign wr_st_ar_map_vld = {ST_WR_FIFO_NUM{1'b0}};
+    assign wr_st_ar_map_idx = {ST_WR_ADDR_W{1'b0}};
 end
 
 if(AXI4_CTRL_RD_ST == 1) begin : AXI4_RD_ST
