@@ -350,6 +350,9 @@ if(AXI4_CTRL_CONF == 1) begin : AXI4_CONF
     end
 end
 else begin
+    for(conf_idx = 0; conf_idx < CONF_REG_NUM; conf_idx = conf_idx + 1) begin : set_default_conf_reg
+        assign conf_reg_o[(conf_idx+1)*CONF_DATA_W-1 -: CONF_DATA_W] = {DATA_W{1'b0}};
+    end
     assign conf_aw_map_vld = {CONF_REG_NUM{1'b0}};
     assign conf_ar_map_vld = {CONF_REG_NUM{1'b0}};
 end
@@ -427,6 +430,10 @@ if(AXI4_CTRL_WR_ST == 1) begin : AXI4_WR_ST
     end
 end
 else begin
+    for(fifo_idx = 0; fifo_idx < ST_WR_FIFO_NUM; fifo_idx = fifo_idx + 1) begin : set_default_wr_fifo
+        assign wr_st_rd_data_o[(fifo_idx+1)*DATA_W-1 -: DATA_W] = {DATA_W{1'b0}};
+        assign wr_st_data_cnt[fifo_idx]                         = {(ST_WR_DAT_CNT_W+1){1'b0}};
+    end
     assign wr_st_wr_rdy     = 1'b1;
     assign wr_st_aw_map_vld = {ST_WR_FIFO_NUM{1'b0}};
     assign wr_st_ar_map_vld = {ST_WR_FIFO_NUM{1'b0}};
