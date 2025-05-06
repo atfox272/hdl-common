@@ -432,6 +432,7 @@ end
 else begin
     for(fifo_idx = 0; fifo_idx < ST_WR_FIFO_NUM; fifo_idx = fifo_idx + 1) begin : set_default_wr_fifo
         assign wr_st_rd_data_o[(fifo_idx+1)*DATA_W-1 -: DATA_W] = {DATA_W{1'b0}};
+        assign wr_st_rd_rdy_o[fifo_idx]                         = 1'b0;
         assign wr_st_data_cnt[fifo_idx]                         = {(ST_WR_DAT_CNT_W+1){1'b0}};
     end
     assign wr_st_wr_rdy     = 1'b1;
