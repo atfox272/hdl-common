@@ -30,6 +30,7 @@ module memory
     // Internal signal
     // -- wire
     // -- reg
+    wire    [DATA_W-1:0]    rd_data_int;
     reg                     rd_rdy_q1;
     reg     [DATA_W-1:0]    rd_data_q1;
 
@@ -44,6 +45,9 @@ module memory
         end 
         else begin
             rd_rdy_q1 <= rd_vld_i;
+            if(rd_vld_i) begin
+                rd_data_q1 <= rd_data_int;
+            end
         end 
     end
     
@@ -55,7 +59,7 @@ module memory
                 wire [SKY130_SRAM_WIDTH-1:0] sram_dout;
                 wire [SKY130_SRAM_WIDTH-1:0] sram_din = wr_data_i[(i+1)*SKY130_SRAM_WIDTH-1:i*SKY130_SRAM_WIDTH];
                 wire sram_we = wr_vld_i && (wr_addr_i < MEM_SIZE) && (wr_addr_i[ALIGN_ADDR_W-1:8] == j);
-                wire sram_cs = (wr_addr_i < MEM_SIZE) && (wr_addr_i[ALIGN_ADDR_W-1:8] == j);
+                wire sram_cs = (wr_addr_i < MEM_SIZE) && (wr_addr_i[ALIGN_ADDR_W-1:8] == j) && rd_vld_i;
 
                 sky130_sram_1kbyte_1rw1r_32x256_8 sram_inst (
                     .clk0(clk),
@@ -74,7 +78,7 @@ module memory
 
                 // Combine read data
                 if (j == wr_addr_i[ALIGN_ADDR_W-1:8]) begin
-                    assign rd_data_o[(i+1)*SKY130_SRAM_WIDTH-1:i*SKY130_SRAM_WIDTH] = sram_dout;
+                    assign rd_data_int[(i+1)*SKY130_SRAM_WIDTH-1:i*SKY130_SRAM_WIDTH] = sram_dout;
                 end
             end
         end
