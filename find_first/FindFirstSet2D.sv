@@ -33,8 +33,10 @@ module FindFirstSet2D #(
   genvar x;
   genvar y;
   
-  logic [DATA_Y_W-1:0]  SetY;
-  logic [DATA_X_W-1:0]  FirstSetXList   [DATA_Y_W-1:0];
+  typedef logic [DATA_X_W-1:0]  InXData_t;
+
+  logic     [DATA_Y_W-1:0]  SetY;
+  InXData_t [DATA_Y_W-1:0]  FirstSetXList;
   
   FindFirstSet #(
     .DATA_W (DATA_Y_W)
@@ -56,7 +58,6 @@ module FindFirstSet2D #(
     end
   endgenerate
 
-  typedef logic [DATA_X_W-1:0]  InXData_t;
 
   OnehotMux #(
     .DATA_TYPE  (InXData_t),
