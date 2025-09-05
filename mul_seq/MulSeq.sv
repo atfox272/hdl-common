@@ -8,11 +8,11 @@
     Input:    
             X
     Output:   
+            X*0
             X*1
-            X*2
             .
             .
-            X*SEQ_LEN
+            X*(SEQ_LEN-1)
 
 
   Purpose: To reduce the number of Adder when generating Multiplying suquence
@@ -27,7 +27,10 @@ module MulSeq #(
 );
   always_comb begin
     for (int i = 0; i < SEQ_LEN; i++) begin
-      if(((i-1) & i) == 0) begin : MulPowerOf2  // Multiply with a power-of-2
+      if(i == 0) begin  // Multiply 0
+        DataOut[i] = '0;
+      end
+      else if(((i-1) & i) == 0) begin : MulPowerOf2  // Multiply with a power-of-2
         DataOut[i] = DataIn << $clog2(i);
       end
       else begin
